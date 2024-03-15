@@ -79,7 +79,7 @@ Label {
 }
 
 .pauseSlide {
-    -fx-graphic: url('/images/pause2.png');
+    -fx-graphic: url('/images/pause.png');
     -fx-background-color: transparent;
 }
 
@@ -88,7 +88,7 @@ Label {
 }
 
 .playSlide {
-    -fx-graphic: url('/images/play2.png');
+    -fx-graphic: url('/images/play.png');
     -fx-background-color: transparent;
 }
 
