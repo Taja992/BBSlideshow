@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane stylesheets="/GUI/view/main.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.controller.AppController">
+<BorderPane prefHeight="719.0" prefWidth="1050.0" stylesheets="/GUI/view/main.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.controller.AppController">
    <top>
       <VBox prefHeight="84.0" BorderPane.alignment="CENTER">
          <children>
@@ -160,7 +160,7 @@
       </VBox>
    </left>
    <center>
-      <VBox alignment="CENTER" prefWidth="728.0" BorderPane.alignment="CENTER">
+      <VBox fx:id="mainVbox" alignment="CENTER" prefWidth="728.0" BorderPane.alignment="CENTER">
          <children>
             <ImageView fx:id="imgMain" fitHeight="500.0" fitWidth="702.0" pickOnBounds="true" preserveRatio="true" styleClass="imgMain">
                <image>
@@ -181,13 +181,16 @@
    <bottom>
       <VBox prefWidth="986.0" BorderPane.alignment="CENTER">
          <children>
-            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+            <HBox alignment="CENTER" prefWidth="200.0">
                <children>
                   <Button fx:id="spPrev" mnemonicParsing="false" onAction="#spPrev" styleClass="spPrev" text="&lt;">
                      <padding>
                         <Insets left="2.0" />
                      </padding></Button>
-                  <ScrollPane fitToHeight="true" prefWidth="946.0" styleClass="spImages" />
+                  <ScrollPane fx:id="bottomSp" fitToHeight="true" prefWidth="946.0" styleClass="spImages">
+                     <content>
+                        <HBox fx:id="bottomHbox" prefHeight="120.0" prefWidth="867.0" spacing="10.0" />
+                     </content></ScrollPane>
                   <Button fx:id="spNext" mnemonicParsing="false" onAction="#spNext" styleClass="spNext" text="&gt;">
                      <padding>
                         <Insets right="2.0" />
