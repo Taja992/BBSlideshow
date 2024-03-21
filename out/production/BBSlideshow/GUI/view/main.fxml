@@ -189,7 +189,7 @@
                      </padding></Button>
                   <ScrollPane fx:id="bottomSp" fitToHeight="true" prefWidth="946.0" styleClass="spImages">
                      <content>
-                        <HBox fx:id="bottomHbox" prefWidth="867.0" spacing="10.0" />
+                        <HBox fx:id="bottomHbox" prefHeight="120.0" prefWidth="867.0" spacing="10.0" />
                      </content></ScrollPane>
                   <Button fx:id="spNext" mnemonicParsing="false" onAction="#spNext" styleClass="spNext" text="&gt;">
                      <padding>
