@@ -1,5 +1,6 @@
 package GUI.controller;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -15,6 +16,8 @@ import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AppController {
 
@@ -61,6 +64,7 @@ public class AppController {
     private ImageView imgMain;
     private Thread slideshowThread;
     private ImageView selectedImageView;
+    private Map<ImageView, String> imageViewToFilePathMap = new HashMap<>();
 
     public void initialize() {
 
@@ -78,15 +82,30 @@ public class AppController {
         }
     }
 
+
+
     public void playBtn(ActionEvent actionEvent) {
         slideshowThread = new Thread(() -> {
-            for (Node node : bottomHbox.getChildren()) {
+            int startIndex = 0;
+            if (selectedImageView != null) {
+                //checks what the selected Image is and sets start from there
+                startIndex = bottomHbox.getChildren().indexOf(selectedImageView);
+            }
+            //starting at startIndex it goes through every image
+            for (int i = startIndex; i < bottomHbox.getChildren().size(); i++) {
+                //if the thread gets broken via pause button or something
                 if (Thread.interrupted()) {
                     break;
                 }
+                Node node = bottomHbox.getChildren().get(i);
+                //check if ImageView
                 if (node instanceof ImageView) {
                     ImageView imageView = (ImageView) node;
-                    javafx.application.Platform.runLater(() -> imgMain.setImage(imageView.getImage()));
+                    //gets filepath of original Imageview from the hashmap
+                    String filePath = imageViewToFilePathMap.get(imageView);
+                    Image originalImage = new Image(filePath);
+                    //Platform.runLater() allows us to update the JavaFX thread from outside of it
+                    Platform.runLater(() -> imgMain.setImage(originalImage));
                     try {
                         Thread.sleep(2000);
                     } catch (InterruptedException e) {
@@ -97,6 +116,7 @@ public class AppController {
         });
         slideshowThread.start();
     }
+
 
     public void imgNext(ActionEvent actionEvent) {
     }
@@ -141,24 +161,26 @@ public class AppController {
     }
 
     private ImageView getImageView(File file, DropShadow borderGlow) {
-        Image image = new Image(file.toURI().toString(), 0, 100, true, true);
-        ImageView imageView = new ImageView(image);
-        //set on mouse click to give a way to select each image
+        Image thumbnailImage = new Image(file.toURI().toString(), 0, 100, true, true);
+        ImageView imageView = new ImageView(thumbnailImage);
         imageView.setOnMouseClicked(event -> {
-            // Remove border from all images
             for (Node node : bottomHbox.getChildren()) {
                 if (node instanceof ImageView) {
                     node.setEffect(null);
                 }
             }
             selectedImageView = imageView;
-            Image originalImage = new Image(file.toURI().toString());
-            setImageDetails(originalImage, file);
-            // Add border to selected image
             imageView.setEffect(borderGlow);
-            Image mainImage = new Image(file.toURI().toString());
-            imgMain.setImage(mainImage);
+            new Thread(() -> {
+                Image originalImage = new Image(file.toURI().toString());
+                javafx.application.Platform.runLater(() -> {
+                    setImageDetails(originalImage, file);
+                    imgMain.setImage(originalImage);
+                });
+            }).start();
         });
+        //Store the ImageView's filepath into a map to load later for slideshow
+        imageViewToFilePathMap.put(imageView, file.toURI().toString());
         return imageView;
     }
 
