@@ -15,13 +15,20 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
 public class AppController {
 
 
+    public Label redPixelsLbl;
+    public Label greenPixelsLbl;
+    public Label bluePixelsLbl;
     @FXML
     private Label footerResolLbl;
     @FXML
@@ -67,7 +74,36 @@ public class AppController {
     private Map<ImageView, String> imageViewToFilePathMap = new HashMap<>();
 
     public void initialize() {
+    }
 
+    public Map<String, Integer> countRGBPixels(String imagePath) {
+        Map<String, Integer> rgbCount = new HashMap<>();
+        int totalRed = 0;
+        int totalGreen = 0;
+        int totalBlue = 0;
+        try {
+            BufferedImage img = ImageIO.read(Paths.get(imagePath).toFile());
+            for (int y = 0; y < img.getHeight(); y++) {
+                for (int x = 0; x < img.getWidth(); x++) {
+                    int pixel = img.getRGB(x, y);
+                    int red = (pixel >> 16) & 0xff;
+                    int green = (pixel >> 8) & 0xff;
+                    int blue = (pixel) & 0xff;
+                    totalRed += red;
+                    totalGreen += green;
+                    totalBlue += blue;
+                    String rgb = red + "," + green + "," + blue;
+                    rgbCount.put(rgb, rgbCount.getOrDefault(rgb, 0) + 1);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //System.out.println("Total Red: " + totalRed + ", Total Green: " + totalGreen + ", Total Blue: " + totalBlue);
+        redPixelsLbl.setText("Red: " + totalRed + " Pixels");
+        greenPixelsLbl.setText("Green: " + totalGreen + " Pixels");
+        bluePixelsLbl.setText("Blue: " + totalBlue + " Pixels");
+        return rgbCount;
     }
 
     public void spPrev(ActionEvent actionEvent) {
@@ -203,6 +239,8 @@ public class AppController {
         }
         imgSize.setText(size);
         footerSizeLbl.setText(size);
+        countRGBPixels(String.valueOf(file));
+
     }
 
 
