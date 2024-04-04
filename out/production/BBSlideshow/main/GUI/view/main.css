@@ -87,6 +87,10 @@ Label {
     -fx-background-color: #cccccc;
 }
 
+.pauseSlide:pressed {
+    -fx-background-color: #999999;
+}
+
 .playSlide {
     -fx-graphic: url('/images/play.png');
     -fx-background-color: transparent;
@@ -94,6 +98,10 @@ Label {
 
 .playSlide:hover {
     -fx-background-color: #cccccc;
+}
+
+.playSlide:pressed {
+    -fx-background-color: #999999;
 }
 
 .loadImg {
@@ -107,6 +115,11 @@ Label {
 .loadImg:hover {
     -fx-background-color: #6D6D6D;
     -fx-text-fill: #232424;
+}
+
+.loadImg:pressed {
+    -fx-background-color: #4B4B4B;
+    -fx-text-fill: #FFFFFF;
 }
 
 .imgTitle2 {

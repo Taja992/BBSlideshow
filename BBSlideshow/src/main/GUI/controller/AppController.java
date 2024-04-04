@@ -1,6 +1,6 @@
 package GUI.controller;
 
-import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -71,12 +71,53 @@ public class AppController {
     private ImageView imgMain;
     private Thread slideshowThread;
     private ImageView selectedImageView;
-    private Map<ImageView, String> imageViewToFilePathMap = new HashMap<>();
+    private final Map<ImageView, String> imageViewToFilePathMap = new HashMap<>();
 
     public void initialize() {
+
     }
 
-    public Map<String, Integer> countRGBPixels(String imagePath) {
+
+
+//    public void countRGBPixels(String imagePath) {
+//        Map<String, Integer> rgbCount = new ConcurrentHashMap<>();
+//        AtomicInteger totalRed = new AtomicInteger();
+//        AtomicInteger totalGreen = new AtomicInteger();
+//        AtomicInteger totalBlue = new AtomicInteger();
+//        try {
+//            BufferedImage img = ImageIO.read(Paths.get(imagePath).toFile());
+//            ExecutorService executor = Executors.newFixedThreadPool(4); // adjust to your number of cores
+//            List<Future<?>> futures = new ArrayList<>();
+//            for (int y = 0; y < img.getHeight(); y++) {
+//                for (int x = 0; x < img.getWidth(); x++) {
+//                    int finalX = x;
+//                    int finalY = y;
+//                    futures.add(executor.submit(() -> {
+//                        int pixel = img.getRGB(finalX, finalY);
+//                        int red = (pixel >> 16) & 0xff;
+//                        int green = (pixel >> 8) & 0xff;
+//                        int blue = (pixel) & 0xff;
+//                        totalRed.addAndGet(red);
+//                        totalGreen.addAndGet(green);
+//                        totalBlue.addAndGet(blue);
+//                        String rgb = red + "," + green + "," + blue;
+//                        rgbCount.put(rgb, rgbCount.getOrDefault(rgb, 0) + 1);
+//                    }));
+//                }
+//            }
+//            for (Future<?> future : futures) {
+//                future.get(); // wait for all tasks to complete
+//            }
+//            executor.shutdown();
+//        } catch (IOException | InterruptedException | ExecutionException e) {
+//            e.printStackTrace();
+//        }
+//        redPixelsLbl.setText("Red: " + totalRed.get() + " Pixels");
+//        greenPixelsLbl.setText("Green: " + totalGreen.get() + " Pixels");
+//        bluePixelsLbl.setText("Blue: " + totalBlue.get() + " Pixels");
+//    }
+
+    public void countRGBPixels(String imagePath) {
         Map<String, Integer> rgbCount = new HashMap<>();
         int totalRed = 0;
         int totalGreen = 0;
@@ -103,7 +144,6 @@ public class AppController {
         redPixelsLbl.setText("Red: " + totalRed + " Pixels");
         greenPixelsLbl.setText("Green: " + totalGreen + " Pixels");
         bluePixelsLbl.setText("Blue: " + totalBlue + " Pixels");
-        return rgbCount;
     }
 
     public void spPrev(ActionEvent actionEvent) {
@@ -121,36 +161,92 @@ public class AppController {
 
 
     public void playBtn(ActionEvent actionEvent) {
+        DropShadow borderGlow = createDropShadow();
+        startSlideshow(borderGlow);
+    }
+
+    private void startSlideshow(DropShadow borderGlow) {
         slideshowThread = new Thread(() -> {
             int startIndex = 0;
             if (selectedImageView != null) {
-                //checks what the selected Image is and sets start from there
                 startIndex = bottomHbox.getChildren().indexOf(selectedImageView);
             }
-            //starting at startIndex it goes through every image
             for (int i = startIndex; i < bottomHbox.getChildren().size(); i++) {
-                //if the thread gets broken via pause button or something
                 if (Thread.interrupted()) {
                     break;
                 }
                 Node node = bottomHbox.getChildren().get(i);
-                //check if ImageView
                 if (node instanceof ImageView) {
-                    ImageView imageView = (ImageView) node;
-                    //gets filepath of original Imageview from the hashmap
-                    String filePath = imageViewToFilePathMap.get(imageView);
-                    Image originalImage = new Image(filePath);
-                    //Platform.runLater() allows us to update the JavaFX thread from outside of it
-                    Platform.runLater(() -> imgMain.setImage(originalImage));
-                    try {
-                        Thread.sleep(2000);
-                    } catch (InterruptedException e) {
-                        break;
-                    }
+                    displayImage(borderGlow, (ImageView) node);
                 }
+                i = checkLoop(i);
             }
         });
         slideshowThread.start();
+    }
+
+//    private void displayImage(DropShadow borderGlow, ImageView imageView) {
+//        String filePath = imageViewToFilePathMap.get(imageView);
+//        String url = new File(filePath).toURI().toString();
+//        Image originalImage = new Image(url);
+//        File file = new File(filePath);
+//        Platform.runLater(() -> {
+//            if (selectedImageView != null) {
+//                selectedImageView.setEffect(null);
+//            }
+//            selectedImageView = imageView;
+//            imageView.setEffect(borderGlow);
+//            imgMain.setImage(originalImage);
+//            setImageDetails(originalImage, file);
+//        });
+//        try {
+//            Thread.sleep(2000);
+//        } catch (InterruptedException e) {
+//            Thread.currentThread().interrupt();
+//        }
+//    }
+
+    private void displayImage(DropShadow borderGlow, ImageView imageView) {
+        String filePath = imageViewToFilePathMap.get(imageView);
+        File file = new File(filePath);
+
+        Task<Image> loadImageTask = new Task<Image>() {
+            @Override
+            protected Image call() throws Exception {
+                // Load the image here
+                String url = file.toURI().toString();
+                return new Image(url);
+            }
+
+            @Override
+            protected void updateValue(Image value) {
+                super.updateValue(value);
+                // Update the UI here
+                if (selectedImageView != null) {
+                    selectedImageView.setEffect(null);
+                }
+                selectedImageView = imageView;
+                imageView.setEffect(borderGlow);
+                imgMain.setImage(value);
+                setImageDetails(value, file);
+            }
+        };
+
+        new Thread(loadImageTask).start();
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    //Check the for loop and if its at the end, reset
+    private int checkLoop(int i) {
+        if (i == bottomHbox.getChildren().size() - 1) {
+            i = -1;
+        }
+        return i;
     }
 
 
@@ -216,7 +312,7 @@ public class AppController {
             }).start();
         });
         //Store the ImageView's filepath into a map to load later for slideshow
-        imageViewToFilePathMap.put(imageView, file.toURI().toString());
+        imageViewToFilePathMap.put(imageView, file.getPath());
         return imageView;
     }
 
@@ -235,12 +331,11 @@ public class AppController {
         } else if (sizeInBytes < 1024 * 1024) {
             size = sizeInBytes / 1024 + " KB";
         } else {
-            size = sizeInBytes / (1024 * 1024) + " MB";
+            size = String.format("%.1f MB", sizeInBytes / (1024.0 * 1024.0));
         }
         imgSize.setText(size);
         footerSizeLbl.setText(size);
-        countRGBPixels(String.valueOf(file));
-
+        countRGBPixels(file.getPath());
     }
 
 

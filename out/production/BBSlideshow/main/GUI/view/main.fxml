@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="777.0" prefWidth="1127.0" stylesheets="/GUI/view/main.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.controller.AppController">
+<BorderPane prefHeight="777.0" prefWidth="1127.0" stylesheets="/GUI/view/main.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.controller.AppController">
    <top>
       <VBox prefHeight="84.0" BorderPane.alignment="CENTER">
          <children>
@@ -144,6 +144,33 @@
                         <Label fx:id="imgSize" styleClass="propertyContent" text="700.0kB">
                            <VBox.margin>
                               <Insets left="15.0" />
+                           </VBox.margin>
+                        </Label>
+                     </children>
+                     <VBox.margin>
+                        <Insets top="5.0" />
+                     </VBox.margin>
+                  </VBox>
+                  <VBox>
+                     <children>
+                        <Label styleClass="propertyTitle" text="Total Pixels:">
+                           <VBox.margin>
+                              <Insets left="5.0" />
+                           </VBox.margin>
+                        </Label>
+                        <Label fx:id="redPixelsLbl" styleClass="propertyContent" text="Red">
+                           <VBox.margin>
+                              <Insets left="5.0" />
+                           </VBox.margin>
+                        </Label>
+                        <Label fx:id="greenPixelsLbl" styleClass="propertyContent" text="Green">
+                           <VBox.margin>
+                              <Insets left="5.0" />
+                           </VBox.margin>
+                        </Label>
+                        <Label fx:id="bluePixelsLbl" styleClass="propertyContent" text="Blue">
+                           <VBox.margin>
+                              <Insets left="5.0" />
                            </VBox.margin>
                         </Label>
                      </children>
