@@ -78,7 +78,6 @@ public class AppController {
     }
 
 
-
 //    public void countRGBPixels(String imagePath) {
 //        Map<String, Integer> rgbCount = new ConcurrentHashMap<>();
 //        AtomicInteger totalRed = new AtomicInteger();
@@ -157,7 +156,6 @@ public class AppController {
             slideshowThread.interrupt();
         }
     }
-
 
 
     public void playBtn(ActionEvent actionEvent) {
