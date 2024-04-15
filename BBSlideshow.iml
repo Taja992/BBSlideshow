@@ -6,6 +6,7 @@
       <sourceFolder url="file://$MODULE_DIR$/BBSlideshow/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/BBSlideshow/src/main" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/BBSlideshow/src/resources" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/BBSlideshow/Test" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/.idea/copilot/chatSessions" />
     </content>
     <orderEntry type="inheritedJdk" />

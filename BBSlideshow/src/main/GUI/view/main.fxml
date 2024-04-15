@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane stylesheets="/GUI/view/main.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.controller.AppController">
+<BorderPane prefHeight="777.0" prefWidth="1127.0" stylesheets="/GUI/view/main.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.controller.AppController">
    <top>
       <VBox prefHeight="84.0" BorderPane.alignment="CENTER">
          <children>
@@ -52,9 +52,9 @@
       </VBox>
    </top>
    <left>
-      <VBox prefHeight="260.0" prefWidth="254.0" BorderPane.alignment="CENTER">
+      <VBox prefHeight="532.0" prefWidth="254.0" BorderPane.alignment="CENTER">
          <children>
-            <VBox prefHeight="471.0" prefWidth="244.0" styleClass="mainPropBox">
+            <VBox prefHeight="521.0" prefWidth="244.0" styleClass="mainPropBox">
                <children>
                   <HBox alignment="CENTER" prefHeight="25.0" prefWidth="244.0" styleClass="imgPropBox">
                      <children>
@@ -151,6 +151,33 @@
                         <Insets top="5.0" />
                      </VBox.margin>
                   </VBox>
+                  <VBox>
+                     <children>
+                        <Label styleClass="propertyTitle" text="Total Pixels:">
+                           <VBox.margin>
+                              <Insets left="5.0" />
+                           </VBox.margin>
+                        </Label>
+                        <Label fx:id="redPixelsLbl" styleClass="propertyContent" text="Red">
+                           <VBox.margin>
+                              <Insets left="5.0" />
+                           </VBox.margin>
+                        </Label>
+                        <Label fx:id="greenPixelsLbl" styleClass="propertyContent" text="Green">
+                           <VBox.margin>
+                              <Insets left="5.0" />
+                           </VBox.margin>
+                        </Label>
+                        <Label fx:id="bluePixelsLbl" styleClass="propertyContent" text="Blue">
+                           <VBox.margin>
+                              <Insets left="5.0" />
+                           </VBox.margin>
+                        </Label>
+                     </children>
+                     <VBox.margin>
+                        <Insets top="5.0" />
+                     </VBox.margin>
+                  </VBox>
                </children>
             </VBox>
          </children>
@@ -160,7 +187,7 @@
       </VBox>
    </left>
    <center>
-      <VBox alignment="CENTER" prefWidth="728.0" BorderPane.alignment="CENTER">
+      <VBox fx:id="mainVbox" alignment="CENTER" prefHeight="528.0" prefWidth="873.0" BorderPane.alignment="CENTER">
          <children>
             <ImageView fx:id="imgMain" fitHeight="500.0" fitWidth="702.0" pickOnBounds="true" preserveRatio="true" styleClass="imgMain">
                <image>
@@ -171,35 +198,39 @@
                </VBox.margin></ImageView>
             <HBox alignment="CENTER" prefHeight="32.0" prefWidth="728.0">
                <children>
-                  <Button fx:id="pauseSlide" mnemonicParsing="false" onAction="#pauseSlide" styleClass="pauseSlide" />
-                  <Button fx:id="playSlide" mnemonicParsing="false" onAction="#playSlide" styleClass="playSlide" />
+                  <Button fx:id="pauseBtn" mnemonicParsing="false" onAction="#pauseBtn" styleClass="pauseSlide" />
+                  <Button fx:id="playBtn" mnemonicParsing="false" onAction="#playBtn" styleClass="playSlide" />
                </children>
             </HBox>
          </children>
       </VBox>
    </center>
    <bottom>
-      <VBox prefWidth="986.0" BorderPane.alignment="CENTER">
+      <VBox prefHeight="154.0" prefWidth="1127.0" BorderPane.alignment="CENTER">
          <children>
-            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+            <HBox alignment="CENTER" prefHeight="131.0" prefWidth="1127.0">
                <children>
-                  <Button fx:id="spPrev" mnemonicParsing="false" onAction="#spPrev" styleClass="spPrev" text="&lt;">
-                     <padding>
-                        <Insets left="2.0" />
-                     </padding></Button>
-                  <ScrollPane fitToHeight="true" prefWidth="946.0" styleClass="spImages" />
-                  <Button fx:id="spNext" mnemonicParsing="false" onAction="#spNext" styleClass="spNext" text="&gt;">
-                     <padding>
-                        <Insets right="2.0" />
-                     </padding></Button>
+                  <ScrollPane fx:id="bottomSp" fitToHeight="true" prefHeight="131.0" prefWidth="1079.0" styleClass="spImages">
+                     <content>
+                        <HBox fx:id="bottomHbox" alignment="CENTER" prefHeight="120.0" prefWidth="867.0" spacing="20.0">
+                           <padding>
+                              <Insets left="20.0" right="20.0" />
+                           </padding>
+                        </HBox>
+                     </content></ScrollPane>
                </children>
             </HBox>
-            <HBox>
+            <HBox spacing="5.0">
                <children>
-                  <Label text="2560 x 1600 Pixels" />
-                  <Label text="Label" />
-                  <Label text="Label" />
+                  <Label fx:id="footerResolLbl" text="2560 x 1600 Pixels" />
+                  <Label fx:id="footerSizeLbl" text="Label" />
                </children>
+               <VBox.margin>
+                  <Insets top="5.0" />
+               </VBox.margin>
+               <padding>
+                  <Insets left="5.0" />
+               </padding>
             </HBox>
          </children>
       </VBox>
