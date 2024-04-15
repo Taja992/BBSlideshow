@@ -20,8 +20,12 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class AppController {
 
@@ -78,72 +82,73 @@ public class AppController {
     }
 
 
-//    public void countRGBPixels(String imagePath) {
-//        Map<String, Integer> rgbCount = new ConcurrentHashMap<>();
-//        AtomicInteger totalRed = new AtomicInteger();
-//        AtomicInteger totalGreen = new AtomicInteger();
-//        AtomicInteger totalBlue = new AtomicInteger();
-//        try {
-//            BufferedImage img = ImageIO.read(Paths.get(imagePath).toFile());
-//            ExecutorService executor = Executors.newFixedThreadPool(4); // adjust to your number of cores
-//            List<Future<?>> futures = new ArrayList<>();
-//            for (int y = 0; y < img.getHeight(); y++) {
-//                for (int x = 0; x < img.getWidth(); x++) {
-//                    int finalX = x;
-//                    int finalY = y;
-//                    futures.add(executor.submit(() -> {
-//                        int pixel = img.getRGB(finalX, finalY);
-//                        int red = (pixel >> 16) & 0xff;
-//                        int green = (pixel >> 8) & 0xff;
-//                        int blue = (pixel) & 0xff;
-//                        totalRed.addAndGet(red);
-//                        totalGreen.addAndGet(green);
-//                        totalBlue.addAndGet(blue);
-//                        String rgb = red + "," + green + "," + blue;
-//                        rgbCount.put(rgb, rgbCount.getOrDefault(rgb, 0) + 1);
-//                    }));
-//                }
-//            }
-//            for (Future<?> future : futures) {
-//                future.get(); // wait for all tasks to complete
-//            }
-//            executor.shutdown();
-//        } catch (IOException | InterruptedException | ExecutionException e) {
-//            e.printStackTrace();
-//        }
-//        redPixelsLbl.setText("Red: " + totalRed.get() + " Pixels");
-//        greenPixelsLbl.setText("Green: " + totalGreen.get() + " Pixels");
-//        bluePixelsLbl.setText("Blue: " + totalBlue.get() + " Pixels");
-//    }
-
     public void countRGBPixels(String imagePath) {
-        Map<String, Integer> rgbCount = new HashMap<>();
-        int totalRed = 0;
-        int totalGreen = 0;
-        int totalBlue = 0;
+        Map<String, Integer> rgbCount = new ConcurrentHashMap<>();
+        AtomicInteger totalRed = new AtomicInteger();
+        AtomicInteger totalGreen = new AtomicInteger();
+        AtomicInteger totalBlue = new AtomicInteger();
         try {
             BufferedImage img = ImageIO.read(Paths.get(imagePath).toFile());
+            ExecutorService executor = Executors.newFixedThreadPool(4); // adjust to your number of cores
+            List<Future<?>> futures = new ArrayList<>();
             for (int y = 0; y < img.getHeight(); y++) {
                 for (int x = 0; x < img.getWidth(); x++) {
-                    int pixel = img.getRGB(x, y);
-                    int red = (pixel >> 16) & 0xff;
-                    int green = (pixel >> 8) & 0xff;
-                    int blue = (pixel) & 0xff;
-                    totalRed += red;
-                    totalGreen += green;
-                    totalBlue += blue;
-                    String rgb = red + "," + green + "," + blue;
-                    rgbCount.put(rgb, rgbCount.getOrDefault(rgb, 0) + 1);
+                    int finalX = x;
+                    int finalY = y;
+                    futures.add(executor.submit(() -> {
+                        int pixel = img.getRGB(finalX, finalY);
+                        int red = (pixel >> 16) & 0xff;
+                        int green = (pixel >> 8) & 0xff;
+                        int blue = (pixel) & 0xff;
+                        totalRed.addAndGet(red);
+                        totalGreen.addAndGet(green);
+                        totalBlue.addAndGet(blue);
+                        String rgb = red + "," + green + "," + blue;
+                        rgbCount.put(rgb, rgbCount.getOrDefault(rgb, 0) + 1);
+                    }));
                 }
             }
-        } catch (IOException e) {
+            for (Future<?> future : futures) {
+                future.get(); // wait for all tasks to complete
+            }
+            executor.shutdown();
+        } catch (IOException | InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
-        //System.out.println("Total Red: " + totalRed + ", Total Green: " + totalGreen + ", Total Blue: " + totalBlue);
-        redPixelsLbl.setText("Red: " + totalRed + " Pixels");
-        greenPixelsLbl.setText("Green: " + totalGreen + " Pixels");
-        bluePixelsLbl.setText("Blue: " + totalBlue + " Pixels");
+        redPixelsLbl.setText("Red: " + totalRed.get() + " Pixels");
+        greenPixelsLbl.setText("Green: " + totalGreen.get() + " Pixels");
+        bluePixelsLbl.setText("Blue: " + totalBlue.get() + " Pixels");
     }
+
+//
+//    public void countRGBPixels(String imagePath) {
+//        Map<String, Integer> rgbCount = new HashMap<>();
+//        int totalRed = 0;
+//        int totalGreen = 0;
+//        int totalBlue = 0;
+//        try {
+//            BufferedImage img = ImageIO.read(Paths.get(imagePath).toFile());
+//            for (int y = 0; y < img.getHeight(); y++) {
+//                for (int x = 0; x < img.getWidth(); x++) {
+//                    int pixel = img.getRGB(x, y);
+//                    int red = (pixel >> 16) & 0xff;
+//                    int green = (pixel >> 8) & 0xff;
+//                    int blue = (pixel) & 0xff;
+//                    totalRed += red;
+//                    totalGreen += green;
+//                    totalBlue += blue;
+//                    String rgb = red + "," + green + "," + blue;
+//                    rgbCount.put(rgb, rgbCount.getOrDefault(rgb, 0) + 1);
+//                }
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        //System.out.println("Total Red: " + totalRed + ", Total Green: " + totalGreen + ", Total Blue: " + totalBlue);
+//        redPixelsLbl.setText("Red: " + totalRed + " Pixels");
+//        greenPixelsLbl.setText("Green: " + totalGreen + " Pixels");
+//        bluePixelsLbl.setText("Blue: " + totalBlue + " Pixels");
+//    }
 
     public void spPrev(ActionEvent actionEvent) {
     }
@@ -204,6 +209,7 @@ public class AppController {
 //        }
 //    }
 
+
     private void displayImage(DropShadow borderGlow, ImageView imageView) {
         String filePath = imageViewToFilePathMap.get(imageView);
         File file = new File(filePath);
@@ -249,11 +255,38 @@ public class AppController {
 
 
     public void imgNext(ActionEvent actionEvent) {
+        if (selectedImageView != null) {
+            int currentIndex = bottomHbox.getChildren().indexOf(selectedImageView);
+            if (currentIndex < bottomHbox.getChildren().size() - 1) {
+                ImageView nextImageView = (ImageView) bottomHbox.getChildren().get(currentIndex + 1);
+                selectImage(nextImageView);
+            }
+        }
     }
 
     public void imgPrev(ActionEvent actionEvent) {
+        if (selectedImageView != null) {
+            int currentIndex = bottomHbox.getChildren().indexOf(selectedImageView);
+            if (currentIndex > 0) {
+                ImageView prevImageView = (ImageView) bottomHbox.getChildren().get(currentIndex - 1);
+                selectImage(prevImageView);
+            }
+        }
     }
 
+    private void selectImage(ImageView imageView) {
+        DropShadow borderGlow = createDropShadow();
+        if (selectedImageView != null) {
+            selectedImageView.setEffect(null);
+        }
+        selectedImageView = imageView;
+        imageView.setEffect(borderGlow);
+        String filePath = imageViewToFilePathMap.get(imageView);
+        File file = new File(filePath);
+        Image originalImage = new Image(file.toURI().toString());
+        setImageDetails(originalImage, file);
+        imgMain.setImage(originalImage);
+    }
 
     public void loadImg(ActionEvent actionEvent) {
         File[] files = getFilesFromDirectory();
@@ -335,7 +368,6 @@ public class AppController {
         footerSizeLbl.setText(size);
         countRGBPixels(file.getPath());
     }
-
 
     private String getFileExtension(File file) {
         String filename = file.getName();
