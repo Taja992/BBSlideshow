@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="777.0" prefWidth="1127.0" stylesheets="/GUI/view/main.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.controller.AppController">
+<BorderPane prefHeight="777.0" prefWidth="1127.0" stylesheets="/GUI/view/main.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.controller.AppController">
    <top>
       <VBox prefHeight="84.0" BorderPane.alignment="CENTER">
          <children>
@@ -210,10 +210,6 @@
          <children>
             <HBox alignment="CENTER" prefHeight="131.0" prefWidth="1127.0">
                <children>
-                  <Button fx:id="spPrev" mnemonicParsing="false" onAction="#spPrev" styleClass="spPrev" text="&lt;">
-                     <padding>
-                        <Insets left="2.0" />
-                     </padding></Button>
                   <ScrollPane fx:id="bottomSp" fitToHeight="true" prefHeight="131.0" prefWidth="1079.0" styleClass="spImages">
                      <content>
                         <HBox fx:id="bottomHbox" alignment="CENTER" prefHeight="120.0" prefWidth="867.0" spacing="20.0">
@@ -222,10 +218,6 @@
                            </padding>
                         </HBox>
                      </content></ScrollPane>
-                  <Button fx:id="spNext" mnemonicParsing="false" onAction="#spNext" styleClass="spNext" text="&gt;">
-                     <padding>
-                        <Insets right="2.0" />
-                     </padding></Button>
                </children>
             </HBox>
             <HBox spacing="5.0">

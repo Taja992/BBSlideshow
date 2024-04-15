@@ -30,35 +30,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class AppController {
 
 
-    public Label redPixelsLbl;
-    public Label greenPixelsLbl;
-    public Label bluePixelsLbl;
+    @FXML
+    private Label redPixelsLbl;
+    @FXML
+    private Label greenPixelsLbl;
+    @FXML
+    private Label bluePixelsLbl;
     @FXML
     private Label footerResolLbl;
     @FXML
     private Label footerSizeLbl;
     @FXML
-    private Label footZoomLbl;
-    @FXML
-    private Button pauseBtn;
-    @FXML
-    private Button playBtn;
-    @FXML
     private HBox bottomHbox;
-    @FXML
-    private ScrollPane bottomSp;
-    @FXML
-    private VBox mainVbox;
-    @FXML
-    private Button spPrev;
-    @FXML
-    private Button spNext;
-    @FXML
-    private Button imgNext;
-    @FXML
-    private Button imgPrev;
-    @FXML
-    private Button loadImg;
     @FXML
     private Label imgWidth;
     @FXML
@@ -150,11 +133,6 @@ public class AppController {
 //        bluePixelsLbl.setText("Blue: " + totalBlue + " Pixels");
 //    }
 
-    public void spPrev(ActionEvent actionEvent) {
-    }
-
-    public void spNext(ActionEvent actionEvent) {
-    }
 
     public void pauseBtn(ActionEvent actionEvent) {
         if (slideshowThread != null) {
