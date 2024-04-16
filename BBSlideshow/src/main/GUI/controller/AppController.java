@@ -1,5 +1,6 @@
 package GUI.controller;
 
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -60,47 +61,53 @@ public class AppController {
     private ImageView selectedImageView;
     private final Map<ImageView, String> imageViewToFilePathMap = new HashMap<>();
 
+    private final ExecutorService executorService = Executors.newFixedThreadPool(4);
+
     public void initialize() {
 
     }
 
 
     public void countRGBPixels(String imagePath) {
-        Map<String, Integer> rgbCount = new ConcurrentHashMap<>();
-        AtomicInteger totalRed = new AtomicInteger();
-        AtomicInteger totalGreen = new AtomicInteger();
-        AtomicInteger totalBlue = new AtomicInteger();
-        try {
-            BufferedImage img = ImageIO.read(Paths.get(imagePath).toFile());
-            ExecutorService executor = Executors.newFixedThreadPool(4); // adjust to your number of cores
-            List<Future<?>> futures = new ArrayList<>();
-            for (int y = 0; y < img.getHeight(); y++) {
-                for (int x = 0; x < img.getWidth(); x++) {
-                    int finalX = x;
-                    int finalY = y;
-                    futures.add(executor.submit(() -> {
-                        int pixel = img.getRGB(finalX, finalY);
-                        int red = (pixel >> 16) & 0xff;
-                        int green = (pixel >> 8) & 0xff;
-                        int blue = (pixel) & 0xff;
-                        totalRed.addAndGet(red);
-                        totalGreen.addAndGet(green);
-                        totalBlue.addAndGet(blue);
-                        String rgb = red + "," + green + "," + blue;
-                        rgbCount.put(rgb, rgbCount.getOrDefault(rgb, 0) + 1);
-                    }));
+        new Thread(() -> {
+            Map<String, Integer> rgbCount = new ConcurrentHashMap<>();
+            AtomicInteger totalRed = new AtomicInteger();
+            AtomicInteger totalGreen = new AtomicInteger();
+            AtomicInteger totalBlue = new AtomicInteger();
+            try {
+                BufferedImage img = ImageIO.read(Paths.get(imagePath).toFile());
+                ExecutorService executor = Executors.newFixedThreadPool(4); // adjust to your number of cores
+                List<Future<?>> futures = new ArrayList<>();
+                for (int y = 0; y < img.getHeight(); y++) {
+                    for (int x = 0; x < img.getWidth(); x++) {
+                        int finalX = x;
+                        int finalY = y;
+                        futures.add(executor.submit(() -> {
+                            int pixel = img.getRGB(finalX, finalY);
+                            int red = (pixel >> 16) & 0xff;
+                            int green = (pixel >> 8) & 0xff;
+                            int blue = (pixel) & 0xff;
+                            totalRed.addAndGet(red);
+                            totalGreen.addAndGet(green);
+                            totalBlue.addAndGet(blue);
+                            String rgb = red + "," + green + "," + blue;
+                            rgbCount.put(rgb, rgbCount.getOrDefault(rgb, 0) + 1);
+                        }));
+                    }
                 }
+                for (Future<?> future : futures) {
+                    future.get(); // wait for all tasks to complete
+                }
+                executor.shutdown();
+            } catch (IOException | InterruptedException | ExecutionException e) {
+                e.printStackTrace();
             }
-            for (Future<?> future : futures) {
-                future.get(); // wait for all tasks to complete
-            }
-            executor.shutdown();
-        } catch (IOException | InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        redPixelsLbl.setText("Red: " + totalRed.get() + " Pixels");
-        greenPixelsLbl.setText("Green: " + totalGreen.get() + " Pixels");
-        bluePixelsLbl.setText("Blue: " + totalBlue.get() + " Pixels");
+            Platform.runLater(() -> {
+                redPixelsLbl.setText("Red: " + totalRed.get() + " Pixels");
+                greenPixelsLbl.setText("Green: " + totalGreen.get() + " Pixels");
+                bluePixelsLbl.setText("Blue: " + totalBlue.get() + " Pixels");
+            });
+        }).start();
     }
 
 //
@@ -214,7 +221,7 @@ public class AppController {
             }
         };
 
-        new Thread(loadImageTask).start();
+        executorService.submit(loadImageTask);
 
         try {
             Thread.sleep(2000);
