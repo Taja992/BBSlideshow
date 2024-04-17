@@ -5,14 +5,12 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
+
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 
@@ -109,6 +107,51 @@ public class AppController {
             });
         }).start();
     }
+
+
+    //////Same as above but using JavaAwt library instead of bitshifting, but I found bitshifting more interesting so just left it to look back on
+//    public void countRGBPixels(String imagePath) {
+//        new Thread(() -> {
+//            Map<String, Integer> rgbCount = new ConcurrentHashMap<>();
+//            AtomicInteger totalRed = new AtomicInteger();
+//            AtomicInteger totalGreen = new AtomicInteger();
+//            AtomicInteger totalBlue = new AtomicInteger();
+//            try {
+//                BufferedImage img = ImageIO.read(Paths.get(imagePath).toFile());
+//                ExecutorService executor = Executors.newFixedThreadPool(4); // adjust to your number of cores
+//                List<Future<?>> futures = new ArrayList<>();
+//                for (int y = 0; y < img.getHeight(); y++) {
+//                    for (int x = 0; x < img.getWidth(); x++) {
+//                        int finalX = x;
+//                        int finalY = y;
+//                        futures.add(executor.submit(() -> {
+//                            int pixel = img.getRGB(finalX, finalY);
+//                            java.awt.Color awtColor = new java.awt.Color(pixel);
+//                            int red = awtColor.getRed();
+//                            int green = awtColor.getGreen();
+//                            int blue = awtColor.getBlue();
+//                            totalRed.addAndGet(red);
+//                            totalGreen.addAndGet(green);
+//                            totalBlue.addAndGet(blue);
+//                            String rgb = red + "," + green + "," + blue;
+//                            rgbCount.put(rgb, rgbCount.getOrDefault(rgb, 0) + 1);
+//                        }));
+//                    }
+//                }
+//                for (Future<?> future : futures) {
+//                    future.get(); // wait for all tasks to complete
+//                }
+//                executor.shutdown();
+//            } catch (IOException | InterruptedException | ExecutionException e) {
+//                e.printStackTrace();
+//            }
+//            Platform.runLater(() -> {
+//                redPixelsLbl.setText("Red: " + totalRed.get() + " Pixels");
+//                greenPixelsLbl.setText("Green: " + totalGreen.get() + " Pixels");
+//                bluePixelsLbl.setText("Blue: " + totalBlue.get() + " Pixels");
+//            });
+//        }).start();
+//    }
 
 //
 //    public void countRGBPixels(String imagePath) {
